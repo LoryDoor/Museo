@@ -68,7 +68,9 @@ public class VisualizzaServlet extends HttpServlet {
                 Connection conn = DriverManager.getConnection(dbu.getUrl(), dbu.getUser(), dbu.getPassword());
                 Statement stmt = conn.createStatement()
         ) {
-            String sql = "SELECT DISTINCT 1 FROM information_schema.STATISTICS WHERE TABLE_SCHEMA = 'db_museo' AND TABLE_NAME = 'museo_visite'";
+            String sql = DbUtility.isProduction() ?
+                    "SELECT DISTINCT 1 FROM information_schema.STATISTICS WHERE TABLE_SCHEMA = 'db12778' AND TABLE_NAME = 'museo_visite'" :
+                    "SELECT DISTINCT 1 FROM information_schema.STATISTICS WHERE TABLE_SCHEMA = 'db_museo' AND TABLE_NAME = 'museo_visite'";
             ResultSet resultSet = stmt.executeQuery(sql);
 
             if(!resultSet.next()){
