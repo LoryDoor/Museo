@@ -8,23 +8,27 @@ CREATE DATABASE IF NOT EXISTS db_museo;
 use db_museo;
 
 -- Tabella Aree
-DROP TABLE IF EXISTS Aree;
-CREATE TABLE IF NOT EXISTS Aree (
+DROP TABLE IF EXISTS museo_aree;
+CREATE TABLE IF NOT EXISTS museo_aree (
     ID_Area integer(3) PRIMARY KEY AUTO_INCREMENT,
     Colore varchar(30) NOT NULL
 );
 
-INSERT INTO Aree(Colore) VALUES
-    ('Rosso'),
+INSERT INTO museo_aree(Colore) VALUES
+    ('Rossa'),
     ('Verde');
 
 -- Tabella visite
-CREATE TABLE IF NOT EXISTS Visite (
+CREATE TABLE IF NOT EXISTS museo_visite (
     ID_Visita integer(5) PRIMARY KEY AUTO_INCREMENT,
     Nominativo varchar(100) NOT NULL,
     Data date NOT NULL,
     NumeroPartecipanti integer(3),
-    LEG_ID_Area integer(3),
+    LEG_ID_Area integer(3) NOT NULL,
 
-    FOREIGN KEY(LEG_ID_Area) REFERENCES Aree(ID_Area) ON DELETE CASCADE ON UPDATE CASCADE
+    FOREIGN KEY(LEG_ID_Area) REFERENCES museo_aree(ID_Area)
+        ON DELETE CASCADE ON UPDATE CASCADE,
+
+    -- Impedisce due visite per la stessa area nello stesso giorno
+    CONSTRAINT unique_area_data UNIQUE (LEG_ID_Area, Data)
 );

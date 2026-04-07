@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="DataSourcePerFileMappings">
+    <file url="file://$PROJECT_DIR$/sql/db_museo.sql" value="1c62a292-34cf-4dd8-8dac-380ba1e95099" />
+    <file url="file://$PROJECT_DIR$/src/main/java/edu/fauser/labs3/museo/PrenotaServlet.java" value="1c62a292-34cf-4dd8-8dac-380ba1e95099" />
+    <file url="file://$PROJECT_DIR$/src/main/java/edu/fauser/labs3/museo/VisualizzaServlet.java" value="1c62a292-34cf-4dd8-8dac-380ba1e95099" />
+  </component>
+</project>
