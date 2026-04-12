@@ -27,9 +27,14 @@
             <div class="container">
                 <div class="card">
                     <h2>Esito prenotazione</h2>
-                    <%if ((int)session.getAttribute("esito") == EsitoPrenotazione.OK.getCodice()) {%>
+                    <%
+                        if ((int)session.getAttribute("esito") == EsitoPrenotazione.OK.getCodice()) {
+                        double importo_totale = (double)session.getAttribute("totale");
+                    %>
                         <p class="success">
                             La tua prenotazione &egrave; andata a buon fine.
+                            <br>Il totale da pagare per la tua visita &egrave;
+                            <strong>&euro;<%= String.format("%.2f", importo_totale) %></strong>.
                             <br>Grazie per aver utilizzato il nostro servizio.
                         </p>
                     <% } else if((int)session.getAttribute("esito") == EsitoPrenotazione.FALLITA.getCodice()){ %>

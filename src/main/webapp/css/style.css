@@ -191,6 +191,44 @@ input[type="submit"]:hover {
 }
 
 /* ============================================ */
+/* FORM FILTRO                                  */
+/* ============================================ */
+.form-filtro {
+    background: white;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    padding: 1.5rem;
+    margin-bottom: 2rem;
+}
+
+.form-filtro form {
+    display: flex;
+    align-items: flex-end;
+    gap: 1rem;
+    flex-wrap: wrap;
+}
+
+.form-filtro label {
+    font-weight: bold;
+    color: #2c3e50;
+    font-size: 0.9rem;
+    margin-right: 0.5rem;
+}
+
+.form-filtro select {
+    padding: 0.5rem;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-size: 1rem;
+}
+
+.form-filtro input[type="submit"] {
+    background-color: #3498db;
+    min-width: auto;
+    padding: 0.5rem 1rem;
+}
+
+/* ============================================ */
 /* TABELLA DATI - Visualizzazione prenotazioni  */
 /* ============================================ */
 .data-table {

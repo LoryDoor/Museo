@@ -11,12 +11,13 @@ use db_museo;
 DROP TABLE IF EXISTS museo_aree;
 CREATE TABLE IF NOT EXISTS museo_aree (
     ID_Area integer(3) PRIMARY KEY AUTO_INCREMENT,
-    Colore varchar(30) NOT NULL
+    Colore varchar(30) NOT NULL,
+    Prezzo decimal(4,2) NOT NULL
 );
 
-INSERT INTO museo_aree(Colore) VALUES
-    ('Rossa'),
-    ('Verde');
+INSERT INTO museo_aree(Colore, Prezzo) VALUES
+    ('Rossa', 12.00),
+    ('Verde', 5.00);
 
 -- Tabella visite
 CREATE TABLE IF NOT EXISTS museo_visite (

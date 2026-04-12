@@ -20,40 +20,40 @@ import javax.servlet.annotation.*;
 public class VisualizzaServlet extends HttpServlet {
     // Costanti per le porzioni statiche della pagina HTML
     private static final String HEADER =
-            "<header>" +
-                    "<h1>Museo</h1>" +
-                    "<h3>Servizio di prenotazione</h3>" +
-                    "<a href='index.jsp'>Torna alla pagina principale</a>" +
-                    "</header>";
+        "<header>" +
+        "<h1>Museo</h1>" +
+        "<h3>Servizio di prenotazione</h3>" +
+        "<a href='index.jsp'>Torna alla pagina principale</a>" +
+        "</header>";
 
     private static final String FOOTER =
-            "<footer>" +
-                    "Sito realizzato a scopo didattico." +
-                    "<br>Tutte le funzioni sono a solo scopo dimostrativo." +
-                    "<br><br>" +
-                    "Autore: Lorenzo Porta, Classe 5FIN, AS: 2025/2026" +
-                    "<br>ITT &quotG. Fauser&quot Via G. B. Ricci, 14, 28100, Novara, Italia." +
-                    "</footer>";
+        "<footer>" +
+        "Sito realizzato a scopo didattico." +
+        "<br>Tutte le funzioni sono a solo scopo dimostrativo." +
+        "<br><br>" +
+        "Autore: Lorenzo Porta, Classe 5FIN, AS: 2025/2026" +
+        "<br>ITT &quotG. Fauser&quot Via G. B. Ricci, 14, 28100, Novara, Italia." +
+        "</footer>";
 
     private static final String HTML_START =
-            "<!DOCTYPE html>" +
-                    "<html lang='it'>" +
-                    "<head>" +
-                    "<title>Prenota</title>" +
-                    "<meta charset='utf-8'>" +
-                    "<link rel='stylesheet' type='text/css' href='css/style.css'>" +
-                    "</head>" +
-                    "<body>" +
-                    HEADER +
-                    "<main>" +
-                    "<div class='container'>";
+        "<!DOCTYPE html>" +
+        "<html lang='it'>" +
+        "<head>" +
+        "<title>Visualizza prenotazioni</title>" +
+        "<meta charset='utf-8'>" +
+        "<link rel='stylesheet' type='text/css' href='css/style.css'>" +
+        "</head>" +
+        "<body>\n" +
+        HEADER +
+        "\n<main>" +
+        "<div class='container'>";
 
     private static final String HTML_END =
-            "</div>" +
-                    "</main>" +
-                    FOOTER +
-                    "</body>" +
-                    "</html>";
+        "</div>" +
+        "</main>\n" +
+        FOOTER +
+        "\n</body>" +
+        "</html>";
 
     public void init() throws ServletException {
         super.init();
@@ -91,16 +91,42 @@ public class VisualizzaServlet extends HttpServlet {
         response.setContentType("text/html");
         PrintWriter out = response.getWriter();
         DateTimeFormatter dtf = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+        String areaFiltro = request.getParameter("area") == null ? "" : request.getParameter("area");
 
         out.println(HTML_START);
+
+        // Stampa dinamica del form per il filtro di ricerca
+        out.println("<div class='form-filtro'>");
+        out.println("<form method='get' action='" + request.getContextPath() + "/visualizza'>");
+        out.println("<label for='selArea'>Area:</label>");
+        out.println("<select id='selArea' name='area'>");
+        out.println("<option value=''> --- Seleziona area --- </option>");
+        out.println("<option value='1'" + ("1".equals(areaFiltro) ? " selected" : "") + ">Area Rossa</option>");
+        out.println("<option value='2'" + ("2".equals(areaFiltro) ? " selected" : "") + ">Area Verde</option>");
+        out.println("</select>");
+        out.println("<input type='submit' value='Applica'>");
+        out.println("</form>");
+        out.println("</div>");
+
+        String sql;
+        if(areaFiltro == null || areaFiltro.isEmpty()) {
+            sql = "SELECT Nominativo, Data, NumeroPartecipanti, Colore FROM museo_visite, museo_aree WHERE LEG_ID_Area = ID_Area";
+        }
+        else{
+            sql = "SELECT Nominativo, Data, NumeroPartecipanti, Colore FROM museo_visite, museo_aree WHERE LEG_ID_Area = ID_Area AND ID_Area = ?";
+        }
 
         DbUtility dbu = DbUtility.getInstance(getServletContext());
         try(
             Connection conn = DriverManager.getConnection(dbu.getUrl(), dbu.getUser(), dbu.getPassword());
-            Statement stmt = conn.createStatement()
+            PreparedStatement stmt = conn.prepareStatement(sql)
         ){
-            String sql = "SELECT Nominativo, Data, NumeroPartecipanti, Colore FROM museo_visite, museo_aree WHERE LEG_ID_Area = ID_Area";
-            ResultSet resultSet = stmt.executeQuery(sql);
+            // Se è stato applicato il filtro viene aggiunto il parametro alla query
+            if(areaFiltro != null && !areaFiltro.isEmpty()) {
+                stmt.setInt(1, Integer.parseInt(areaFiltro));
+            }
+
+            ResultSet resultSet = stmt.executeQuery();
 
             String rowPattern =
                 "<tr class='data-table'>" +

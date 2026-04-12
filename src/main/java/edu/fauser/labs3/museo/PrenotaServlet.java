@@ -12,6 +12,8 @@ import edu.fauser.labs3.museo.ValidazioneEsiti.*;
 
 import java.io.*;
 import java.sql.*;
+import java.util.ArrayList;
+import java.util.List;
 import javax.servlet.ServletException;
 import javax.servlet.http.*;
 import javax.servlet.annotation.*;
@@ -24,6 +26,8 @@ public class PrenotaServlet extends HttpServlet {
     private static final int MAX_ID_AREA = 2;
     private static final int MIN_NUMERO_PARTECIPANTI = 3;
     private static final int MAX_NUMERO_PARTECIPANTI = 30;
+
+    private static final List<Double> prezzi_aree = new ArrayList<>(MIN_AREE);
 
     public void init() throws ServletException {
         super.init();
@@ -51,6 +55,33 @@ public class PrenotaServlet extends HttpServlet {
             }
         }
         catch (SQLException e) {
+            e.printStackTrace();
+            System.err.println("[" + new java.util.Date() + "] ERRORE SQL: " + e.getMessage());
+            throw new RuntimeException("Errore di accesso al database: " + e.getMessage(), e);
+        }
+
+        // Caricamento dei prezzi delle aree
+        try(
+            Connection conn = DriverManager.getConnection(dbu.getUrl(), dbu.getUser(), dbu.getPassword());
+            Statement stmt = conn.createStatement()
+        ){
+            String sql = "SELECT Prezzo FROM museo_aree";
+            ResultSet resultSet = stmt.executeQuery(sql);
+
+            if(!resultSet.next()){
+                System.err.println("[" + new java.util.Date() + "] ERRORE: Non è stato possibile ricavare i prezzi " +
+                        "dal database in fase di inizializzazione.");
+                throw new RuntimeException("Non è stato possibile ricavare delle informazioni dal database in fase di" +
+                        "inizializzazione.");
+            }
+            else{
+                do{
+                    double prezzo = resultSet.getDouble(1);
+                    prezzi_aree.add(prezzo);
+                } while(resultSet.next());
+            }
+        }
+        catch (SQLException e){
             e.printStackTrace();
             System.err.println("[" + new java.util.Date() + "] ERRORE SQL: " + e.getMessage());
             throw new RuntimeException("Errore di accesso al database: " + e.getMessage(), e);
@@ -128,6 +159,7 @@ public class PrenotaServlet extends HttpServlet {
                 stmtInsert.setInt(3, Integer.parseInt(strNumeroPartecipanti));
                 stmtInsert.setInt(4, area);
 
+                // Se la query inserisce 1 riga l'inserimento è andato a buon fine
                 inserimentoOk = (stmtInsert.executeUpdate() == 1);
             }
             catch (SQLException e) {
@@ -135,8 +167,13 @@ public class PrenotaServlet extends HttpServlet {
                 inserimentoOk = false;
             }
 
-            // Gestione esito inserimento
+            // Calcolo del prezzo totale dei biglietti.
+            // La variabile area è un indice 1-based, mentre per l'ArrayList occorre un indice 0-based.
+            double importo_totale = Integer.parseInt(strNumeroPartecipanti) * prezzi_aree.get(area-1);
+
+            // Gestione del feedback sull'esito dell'inserimento
             session.setAttribute("esito", (inserimentoOk ? EsitoPrenotazione.OK.getCodice() : EsitoPrenotazione.FALLITA.getCodice()));
+            session.setAttribute("totale", inserimentoOk ? importo_totale : "");
             response.sendRedirect("esito-prenotazione.jsp");
         }
     }
