@@ -8,6 +8,7 @@ package edu.fauser.labs3.museo;
 */
 
 import edu.fauser.DbUtility;
+import edu.fauser.labs3.museo.ValidazioneEsiti.*;
 
 import java.io.*;
 import java.sql.*;
@@ -17,12 +18,12 @@ import javax.servlet.annotation.*;
 
 @WebServlet(name = "prenotaServlet", value = "/prenota")
 public class PrenotaServlet extends HttpServlet {
-    // Costanti generiche
+    // Costanti per la validazione
     private static final int MIN_AREE = 2;
     private static final int MIN_ID_AREA = 1;
     private static final int MAX_ID_AREA = 2;
-    private static final String NUOVA_PRENOTAZIONE_OK = "ok";
-    private static final String NUOVA_PRENOTAZIONE_FALLITA = "failed";
+    private static final int MIN_NUMERO_PARTECIPANTI = 3;
+    private static final int MAX_NUMERO_PARTECIPANTI = 30;
 
     public void init() throws ServletException {
         super.init();
@@ -74,45 +75,48 @@ public class PrenotaServlet extends HttpServlet {
 
         // Validazione nominativo
         if (!validaNominativo(nominativo)){
-            session.setAttribute("erroreNominativo", 1);
+            session.setAttribute("erroreNominativo", EsitoNominativo.FORMATO_NON_VALIDO.getCodice());
             errori = true;
         }
 
         // Validazione data
-        int esitoValidaDataVisita = validaDataVisita(strDataVisita);
-        if(esitoValidaDataVisita != 0){
-            session.setAttribute("erroreDataVisita", esitoValidaDataVisita);
+        EsitoData esitoValidaDataVisita = validaDataVisita(strDataVisita);
+        if(esitoValidaDataVisita != EsitoData.OK){
+            session.setAttribute("erroreData", esitoValidaDataVisita.getCodice());
             errori = true;
         }
 
         // Validazione numero partecipanti
-        int esitoValidaNumeroPartecipanti = validaNumeroPartecipanti(strNumeroPartecipanti);
-        if(esitoValidaNumeroPartecipanti != 0){
-            session.setAttribute("erroreNumeroPartecipanti", esitoValidaNumeroPartecipanti);
+        EsitoNumeroPartecipanti esitoValidaNumeroPartecipanti = validaNumeroPartecipanti(strNumeroPartecipanti);
+        if(esitoValidaNumeroPartecipanti != EsitoNumeroPartecipanti.OK){
+            session.setAttribute("erroreNumeroPartecipanti", esitoValidaNumeroPartecipanti.getCodice());
             errori = true;
         }
 
         // Validazione area
         int area = 0;
+        boolean dataValida = (esitoValidaDataVisita == ValidazioneEsiti.EsitoData.OK);
+
         if(validaArea(strArea)){
             area = Integer.parseInt(strArea);
-            if(!verificaDisponibilitaArea(area, strDataVisita)){
-                session.setAttribute("erroreData", 2);
-                session.setAttribute("erroreArea", 2);
+
+            // Verifica la disponibilità solo se la data è valida
+            if(dataValida && !verificaDisponibilitaArea(area, strDataVisita)){
+                session.setAttribute("erroreData", EsitoData.NON_DISPONIBILE);
+                session.setAttribute("erroreArea", EsitoArea.NON_DISPONIBILE);
                 errori = true;
             }
         }
         else{
-            session.setAttribute("erroreArea", 1);
+            session.setAttribute("erroreArea", EsitoArea.NON_SELEZIONATA);
             errori = true;
         }
 
-        // Se ci sono errori, torna al form
-        if (errori) {
+        if (errori) { // Se ci sono errori, torna al form
             response.sendRedirect("prenota.jsp");
         }
-        else {
-            // Se non ci sono errori, procede con l'inserimento nel DB
+        else { // Se non ci sono errori, procede con l'inserimento nel DB
+
             DbUtility dbu = DbUtility.getInstance(getServletContext());
             boolean inserimentoOk;
             try (
@@ -132,7 +136,7 @@ public class PrenotaServlet extends HttpServlet {
             }
 
             // Gestione esito inserimento
-            session.setAttribute("esito", (inserimentoOk ? NUOVA_PRENOTAZIONE_OK : NUOVA_PRENOTAZIONE_FALLITA));
+            session.setAttribute("esito", (inserimentoOk ? EsitoPrenotazione.OK.getCodice() : EsitoPrenotazione.FALLITA.getCodice()));
             response.sendRedirect("esito-prenotazione.jsp");
         }
     }
@@ -145,46 +149,46 @@ public class PrenotaServlet extends HttpServlet {
         );
     }
 
-    private int validaDataVisita(String strDataVisita){
+    private EsitoData validaDataVisita(String strDataVisita){
         Date dataVisitaDate;
         if (strDataVisita == null || strDataVisita.isEmpty()) {
-            return 1; // Formato non valido
+            return EsitoData.FORMATO_NON_VALIDO;
         }
         else{
             try {
                 dataVisitaDate = java.sql.Date.valueOf(strDataVisita); // formato YYYY-MM-DD
 
-                // Controllo data non precedente a oggi
+                // Controllo data successiva a oggi
                 java.sql.Date oggi = new java.sql.Date(System.currentTimeMillis());
-                if (dataVisitaDate.before(oggi)) {
-                    return 3; // Data nel passato
+                if (!dataVisitaDate.after(oggi)) { // non oggi o prima
+                    return EsitoData.DATA_PASSATA;
                 }
             } catch (IllegalArgumentException e) {
-                return 1; // Formato non valido
+                return EsitoData.FORMATO_NON_VALIDO;
             }
         }
 
-        return 0;
+        return EsitoData.OK;
     }
 
-    private int validaNumeroPartecipanti(String strNumeroPartecipanti){
+    private EsitoNumeroPartecipanti validaNumeroPartecipanti(String strNumeroPartecipanti){
         int numeroPartecipanti;
         if (strNumeroPartecipanti == null || strNumeroPartecipanti.isEmpty()) {
-            return 1; // Campo non compilato correttamente
+            return EsitoNumeroPartecipanti.FORMATO_NON_VALIDO;
         }
         else {
             try {
                 numeroPartecipanti = Integer.parseInt(strNumeroPartecipanti);
-                if (numeroPartecipanti < 3 || numeroPartecipanti > 30) {
-                    return 2; //Campo compilato con valori oltre i limiti
+                if (numeroPartecipanti < MIN_NUMERO_PARTECIPANTI || numeroPartecipanti > MAX_NUMERO_PARTECIPANTI) {
+                    return EsitoNumeroPartecipanti.LIMITI_SUPERATI;
                 }
             }
             catch (NumberFormatException e) {
-                return 1; // Campo non compilato correttamente
+                return EsitoNumeroPartecipanti.FORMATO_NON_VALIDO;
             }
         }
 
-        return 0;
+        return EsitoNumeroPartecipanti.OK;
     }
 
     private boolean validaArea(String strArea){

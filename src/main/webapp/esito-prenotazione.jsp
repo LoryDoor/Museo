@@ -1,4 +1,5 @@
 <%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
+<%@ page import="edu.fauser.labs3.museo.ValidazioneEsiti.EsitoPrenotazione" %>
 
 <%--
     FILE: webapp/esito-prenotazione.jsp
@@ -6,11 +7,6 @@
     AUTORE: Lorenzo Porta
     DATA: 05/04/2026
 --%>
-
-<%
-    final String NUOVA_PRENOTAZIONE_OK = "ok";
-    final String NUOVA_PRENOTAZIONE_FALLITA = "failed";
-%>
 
 <!DOCTYPE html>
 <html lang="it">
@@ -31,12 +27,12 @@
             <div class="container">
                 <div class="card">
                     <h2>Esito prenotazione</h2>
-                    <%if (session.getAttribute("esito").equals(NUOVA_PRENOTAZIONE_OK)) {%>
+                    <%if ((int)session.getAttribute("esito") == EsitoPrenotazione.OK.getCodice()) {%>
                         <p class="success">
                             La tua prenotazione &egrave; andata a buon fine.
                             <br>Grazie per aver utilizzato il nostro servizio.
                         </p>
-                    <% } else if(session.getAttribute("esito").equals(NUOVA_PRENOTAZIONE_FALLITA)){ %>
+                    <% } else if((int)session.getAttribute("esito") == EsitoPrenotazione.FALLITA.getCodice()){ %>
                         <p class="failed">
                             Ci dispiace, abbiamo riscontrato dei problemi nella registrazione della tua prenotazione.<br>
                             Ti preghiamo di riprovare più tardi.
