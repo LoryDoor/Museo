@@ -1,5 +1,5 @@
 # Museo
-Esempio didattico Servlet in Java - Applicazione "Museo"
+Applicazione "Museo" - Esempio didattico Servlet in Java
 
 ## Funzionalità
 - **Prenotazione di una visita**: specificando nome, data, area desiderata e numero di partecipanti.
