@@ -2,7 +2,7 @@ package edu.fauser.labs3.museo;
 
 /*
     FILE: src/main/java/edu/fauser/labs3/museo/ValidazioneEsiti.java
-    CONTENUTO: Libreria di Enum per i codici di errore delle validazioni
+    DESCRIZIONE: Libreria di Enum per i codici di errore delle validazioni
     AUTORE: Lorenzo Porta
     DATA: 12/04/2026
 */

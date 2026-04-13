@@ -2,7 +2,7 @@ package edu.fauser.labs3.museo;
 
 /*
     FILE: src/main/java/edu/fauser/labs3/museo/PrenotaServlet.java
-    CONTENUTO: Servlet per la registrazione delle nuove prenotazioni
+    DESCRIZIONE: Servlet per la registrazione delle nuove prenotazioni
     AUTORE: Lorenzo Porta
     DATA: 30/03/2026
 */

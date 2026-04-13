@@ -3,7 +3,7 @@
 
 <%--
     FILE: src/main/webapp/prenota.jsp
-    CONTENUTO: Form per l'inserimento di una nuova prenotazione
+    DESCRIZIONE: Form per l'inserimento di una nuova prenotazione
     AUTORE: Lorenzo Porta
     DATA: 05/04/2026
 --%>

@@ -2,7 +2,7 @@ package edu.fauser.labs3.museo;
 
 /*
     FILE: src/main/java/edu/fauser/labs3/museo/VisualizzaServlet.java
-    CONTENUTO: Servlet per la visualizzazione delle prenotazioni inserite a sistema
+    DESCRIZIONE: Servlet per la visualizzazione delle prenotazioni inserite a sistema
     AUTORE: Lorenzo Porta
     DATA: 06/04/2026
 */
