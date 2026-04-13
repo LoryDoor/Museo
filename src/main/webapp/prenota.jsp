@@ -2,7 +2,7 @@
 <%@ page import="edu.fauser.labs3.museo.ValidazioneEsiti.*" %>
 
 <%--
-    FILE: webapp/prenota.jsp
+    FILE: src/main/webapp/prenota.jsp
     CONTENUTO: Form per l'inserimento di una nuova prenotazione
     AUTORE: Lorenzo Porta
     DATA: 05/04/2026

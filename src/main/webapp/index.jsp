@@ -1,6 +1,6 @@
 <%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 <%--
-    FILE: webapp/index.jsp
+    FILE: src/main/webapp/index.jsp
     DESCRIZIONE: Pagina principale della webapp
     AUTORE: Lorenzo Porta
     DATA: 05/04/2026

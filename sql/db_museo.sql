@@ -1,5 +1,5 @@
 -- FILE: sql/db_museo.sql
--- DESCRIZIONE: Script di creazione del DB e delle tabelle per l'applicazione Museo
+-- DESCRIZIONE: Script di inizializzazione del DB e delle tabelle per l'applicazione Museo
 -- AUTORE: Lorenzo Porta
 -- DATA: 30/03/2026
 

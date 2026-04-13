@@ -2,7 +2,7 @@
 <%@ page import="edu.fauser.labs3.museo.ValidazioneEsiti.EsitoPrenotazione" %>
 
 <%--
-    FILE: webapp/esito-prenotazione.jsp
+    FILE: src/main/webapp/esito-prenotazione.jsp
     DESCRIZIONE: Pagina per mostrare gli esiti della prenotazione effetuata dall'utente
     AUTORE: Lorenzo Porta
     DATA: 05/04/2026
